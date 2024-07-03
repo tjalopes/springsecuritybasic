@@ -2,6 +2,7 @@ package com.example.springsecuritybasic;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.authentication.ProviderManager;
 
 @SpringBootApplication
 public class SpringsecuritybasicApplication {
