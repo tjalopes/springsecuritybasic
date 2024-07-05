@@ -6,7 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 import java.util.Date;
 
 @Entity
-@Table(name = "cards")
+@Table(name = "card")
 public class Cards {
 
     @Id
@@ -19,7 +19,7 @@ public class Cards {
             }
     )
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "loansId")
-    @Column(name = "card_id")
+    @Column(name = "id")
     private int cardId;
 
     @Column(name = "customer_id")

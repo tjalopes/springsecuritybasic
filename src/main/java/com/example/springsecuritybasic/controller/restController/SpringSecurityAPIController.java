@@ -53,10 +53,9 @@ public class SpringSecurityAPIController {
         return responseEntity;
     }
 
-    @GetMapping("/account/details")
-    public ResponseEntity<Account> getAccountDetails(Principal principal, @RequestParam int id){
-        logger.info("{} - /account/details - principalName:{}", RequestMethod.GET, principal.getName());
-        logger.info("{}", id);
+    @GetMapping("/account/details/{id}")
+    public ResponseEntity<Account> getAccountDetails(Principal principal, @PathVariable int id){
+        logger.info("{} - /account/details/{} - principalName:{}", RequestMethod.GET, id, principal.getName());
 
         Account account = springSecurityOperations.getAccountDetails(id);
 
@@ -67,10 +66,9 @@ public class SpringSecurityAPIController {
         return responseEntity;
     }
 
-    @GetMapping("/account/balance")
-    public ResponseEntity<List<AccountTransaction>> getAccountBalanceDetails(Principal principal, @RequestParam int id){
-        logger.info("{} - /account/balance - principalName:{}", RequestMethod.GET, principal.getName());
-        logger.info("{}", id);
+    @GetMapping("/account/balance/{id}")
+    public ResponseEntity<List<AccountTransaction>> getAccountBalanceDetails(Principal principal, @PathVariable int id){
+        logger.info("{} - /account/balance/{} - principalName:{}", RequestMethod.GET, id, principal.getName());
 
         List<AccountTransaction> accountTransactionList = springSecurityOperations.getAccountBalance(id);
 
@@ -81,10 +79,9 @@ public class SpringSecurityAPIController {
         return responseEntity;
     }
 
-    @GetMapping("/account/loan")
-    public ResponseEntity<List<Loans>> getAccountLoanData(Principal principal, @RequestParam int id){
-        logger.info("{} - /account/loan - principalName:{}", RequestMethod.GET, principal.getName());
-        logger.info("{}", id);
+    @GetMapping("/account/loan/{id}")
+    public ResponseEntity<List<Loans>> getAccountLoanData(Principal principal, @PathVariable int id){
+        logger.info("{} - /account/loan/{} - principalName:{}", RequestMethod.GET, id, principal.getName());
 
         List<Loans> loansList = springSecurityOperations.getAccountLoans(id);
 
@@ -95,13 +92,13 @@ public class SpringSecurityAPIController {
         return responseEntity;
     }
 
-    @GetMapping("/account/cards")
-    public ResponseEntity<String> getAccountCardsDetails(Principal principal){
-        logger.info("{} - /account/cards - principalName:{}", RequestMethod.GET, principal.getName());
+    @GetMapping("/account/cards/{id}")
+    public ResponseEntity<List<Cards>> getAccountCardsDetails(Principal principal, @PathVariable int id){
+        logger.info("{} - /account/cards/{} - principalName:{}", RequestMethod.GET, id, principal.getName());
 
-        String cardsList = springSecurityOperations.getCardsDetails();
+        List<Cards> cardsList = springSecurityOperations.getCardsDetails(id);
 
-        ResponseEntity<String> responseEntity = ResponseEntity.ok().body(cardsList);
+        ResponseEntity<List<Cards>> responseEntity = ResponseEntity.ok().body(cardsList);
 
         logger.info("{}", responseEntity);
 

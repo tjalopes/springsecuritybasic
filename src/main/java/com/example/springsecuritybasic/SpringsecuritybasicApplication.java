@@ -6,7 +6,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @SpringBootApplication
-@EnableWebSecurity(debug = false)
+// @EnableWebSecurity(debug = true)
 public class SpringsecuritybasicApplication {
 
 	public static void main(String[] args) {

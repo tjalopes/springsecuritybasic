@@ -1,83 +1,36 @@
 package com.example.springsecuritybasic.config;
 
-import com.example.springsecuritybasic.filter.AuthoritiesLoggingAfterFilter;
-import com.example.springsecuritybasic.filter.AuthoritiesLoggingAtFilter;
-import com.example.springsecuritybasic.filter.CsrfCookieFilter;
-import com.example.springsecuritybasic.filter.RequestValidationBeforeFilter;
-import jakarta.servlet.http.HttpServletRequest;
+import com.example.springsecuritybasic.filter.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-
-import javax.sql.DataSource;
-import java.util.Collections;
 
 @Configuration
 public class SecurityConfiguration {
 
-
+    //there is a lot of configurations that I removed but can be seen in previous commits on GitHub
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        // define a csrf token
-        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
-        requestHandler.setCsrfRequestAttributeName("_csrf");
-
-
-        httpSecurity.securityContext(securityContext -> securityContext.requireExplicitSave(false))
-                // always create the jsessionid after the initial login is completed
-                // authenticate once and get a session as long as the session token is valid
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
-                // cors configuration below
-                .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                        CorsConfiguration config = new CorsConfiguration();
-                        // allow origin in the port 4200
-                        config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-                        // allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
-                        config.setAllowedMethods(Collections.singletonList("*"));
-                        // allow the said origin to send credentials to authenticate, this is set to false by default for security reasons
-                        config.setAllowCredentials(true);
-                        // this allows the server to accept any headers in the request by origins referenced above
-                        config.setAllowedHeaders(Collections.singletonList("*"));
-                        config.setMaxAge(3600L);
-                        return config;
-                    }
-                }))
-                // csrf configuration below
-                // disable csrf for the request that match the patterns below (ignoringRequestMatchers)
-                .csrf(csrfCustomizer -> csrfCustomizer.csrfTokenRequestHandler(requestHandler).ignoringRequestMatchers("/information/contact", "/register")
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-                // execute the csrfCookieFilter after the basic authentication filter
-                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-                .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
-                .addFilterAt(new AuthoritiesLoggingAtFilter(), BasicAuthenticationFilter.class)
-                .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
-                // authorize different requests depending on the endpoint
+        // with the line below we are telling the spring security to not generate jsession, we will generate ourselves
+        httpSecurity.sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(AbstractHttpConfigurer::disable)
+                // Filter responsible to generate the jwt token
+                .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+                // Filter responsible to validate the jwt token
+                .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        // the request that match the pattern below will be authenticated and need to have the specified role
-                        .requestMatchers("/account/**").hasRole("USER")
-                        // the request that match the pattern below will be authenticated but do not need to have any authority
-                        .requestMatchers("/user").authenticated()
-                        // the requests that match the regex below are not protected by authentication and are open to all users
+                        .requestMatchers("/account/**","/user").authenticated()
                         .requestMatchers("/information/**", "/register","/favicon.ico","/error").permitAll()
                 )
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());
-
         return httpSecurity.build();
     }
 

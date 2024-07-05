@@ -82,8 +82,13 @@ public class SpringSecurityOperations {
         }
     }
 
-    public String getCardsDetails() {
-        return "Check cards details";
+    public List<Cards> getCardsDetails(int id) {
+        List<Cards> cardsList = cardsRepository.findByCustomerId(id);
+        if (cardsList != null) {
+            return cardsList;
+        } else {
+            return null;
+        }
     }
 
     public List<Loans> getAccountLoans(int id) {
