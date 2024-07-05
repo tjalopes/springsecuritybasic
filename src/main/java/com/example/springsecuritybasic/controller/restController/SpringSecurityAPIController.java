@@ -96,13 +96,12 @@ public class SpringSecurityAPIController {
     }
 
     @GetMapping("/account/cards")
-    public ResponseEntity<List<Cards>> getAccountCardsDetails(Principal principal, @RequestParam int id){
+    public ResponseEntity<String> getAccountCardsDetails(Principal principal){
         logger.info("{} - /account/cards - principalName:{}", RequestMethod.GET, principal.getName());
-        logger.info("{}", id);
 
-        List<Cards> cardsList = springSecurityOperations.getCardsDetails(id);
+        String cardsList = springSecurityOperations.getCardsDetails();
 
-        ResponseEntity<List<Cards>> responseEntity = ResponseEntity.ok().body(cardsList);
+        ResponseEntity<String> responseEntity = ResponseEntity.ok().body(cardsList);
 
         logger.info("{}", responseEntity);
 

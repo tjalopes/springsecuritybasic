@@ -1,11 +1,13 @@
 package com.example.springsecuritybasic.db.model;
 
 import com.example.springsecuritybasic.resource.springSecurityAPIResource.input.PostUserResource;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "customer")
@@ -43,9 +45,12 @@ public class Customer {
     @Column(name = "create_dt")
     private Date createDt;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
+    private Set<Authority> authorities;
+
     public Customer() {
     }
-
     public Customer(PostUserResource postUserResource) {
         this.name = postUserResource.getName();
         this.email = postUserResource.getEmail();
@@ -83,6 +88,10 @@ public class Customer {
         return createDt;
     }
 
+    public Set<Authority> getAuthorities() {
+        return authorities;
+    }
+
     public void setCustomerId(int customerId) {
         this.customerId = customerId;
     }
@@ -111,6 +120,10 @@ public class Customer {
         this.createDt = createDt;
     }
 
+    public void setAuthorities(Set<Authority> authorities) {
+        this.authorities = authorities;
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
@@ -121,6 +134,7 @@ public class Customer {
                 ", pwd='" + pwd + '\'' +
                 ", role='" + role + '\'' +
                 ", createDt=" + createDt +
+                ", authorities=" + authorities +
                 '}';
     }
 }

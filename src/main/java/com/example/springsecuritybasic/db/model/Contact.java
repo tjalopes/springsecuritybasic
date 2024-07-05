@@ -8,7 +8,7 @@ import jakarta.persistence.Table;
 import java.util.Date;
 
 @Entity
-@Table(name = "contact_messages")
+@Table(name = "contact_message")
 public class Contact {
 
     @Id
@@ -21,8 +21,10 @@ public class Contact {
     @Column(name = "contact_email")
     private String contactEmail;
 
+    @Column(name = "subject")
     private String subject;
 
+    @Column(name = "message")
     private String message;
 
     @Column(name = "create_dt")
