@@ -6,8 +6,8 @@ import org.hibernate.annotations.GenericGenerator;
 import java.util.Date;
 
 @Entity
-@Table(name="loans")
-public class Loans {
+@Table(name="loan")
+public class Loan {
 
     @Id
     @GenericGenerator(
@@ -43,7 +43,7 @@ public class Loans {
     @Column(name = "create_dt")
     private String createDt;
 
-    public Loans() {
+    public Loan() {
     }
 
     public int getLoanNumber() {
@@ -112,7 +112,7 @@ public class Loans {
 
     @Override
     public String toString() {
-        return "Loans{" +
+        return "Loan{" +
                 "loanNumber=" + loanNumber +
                 ", customerId=" + customerId +
                 ", startDt=" + startDt +

@@ -1,13 +1,13 @@
 package com.example.springsecuritybasic.db.repository;
 
-import com.example.springsecuritybasic.db.model.Loans;
+import com.example.springsecuritybasic.db.model.Loan;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface LoanRepository extends CrudRepository<Loans, Long> {
+public interface LoanRepository extends CrudRepository<Loan, Long> {
 
-    List<Loans> findByCustomerIdOrderByStartDtDesc(int customerId);
+    List<Loan> findByCustomerIdOrderByStartDtDesc(int customerId);
 }

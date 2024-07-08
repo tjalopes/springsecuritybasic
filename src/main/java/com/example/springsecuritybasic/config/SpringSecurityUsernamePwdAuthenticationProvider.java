@@ -37,6 +37,7 @@ public class SpringSecurityUsernamePwdAuthenticationProvider implements Authenti
         List<Customer> customer = customerRepository.findByEmail(username);
         if (!customer.isEmpty()) {
             if (passwordEncoder.matches(pwd, customer.get(0).getPwd())) {
+                System.out.println(getGrantedAuthorities(customer.get(0).getAuthorities()));
                 return new UsernamePasswordAuthenticationToken(username, pwd, getGrantedAuthorities(customer.get(0).getAuthorities()));
             } else {
                 throw new BadCredentialsException("Invalid password!");

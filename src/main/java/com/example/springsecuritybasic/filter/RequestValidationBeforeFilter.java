@@ -45,5 +45,6 @@ public class RequestValidationBeforeFilter implements Filter {
                 }
             }
         }
+        chain.doFilter(request, response);
     }
 }

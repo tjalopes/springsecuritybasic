@@ -1,46 +1,19 @@
-package com.example.springsecuritybasic.db.model;
+package com.example.springsecuritybasic.resource.springSecurityAPIResource.input;
 
-import com.example.springsecuritybasic.resource.springSecurityAPIResource.input.PostContactResource;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
-import java.util.Date;
-
-@Entity
-@Table(name = "contact_message")
-public class Contact {
-
-    @Id
-    @Column(name = "id")
+public class PostContactResource {
+    @NotEmpty
     private String contactId;
-
-    @Column(name = "contact_name")
+    @NotEmpty
     private String contactName;
-
-    @Column(name = "contact_email")
+    @NotEmpty
     private String contactEmail;
-
-    @Column(name = "subject")
     private String subject;
-
-    @Column(name = "message")
     private String message;
 
-    @Column(name = "create_dt")
-    private Date createDt;
-
-    public Contact() {
-    }
-
-    public Contact(PostContactResource postContactResource) {
-        this.contactId = postContactResource.getContactId();
-        this.contactName = postContactResource.getContactName();
-        this.contactEmail = postContactResource.getContactEmail();
-        this.subject = postContactResource.getSubject();
-        this.message = postContactResource.getMessage();
-        this.createDt = new Date(System.currentTimeMillis());
+    public PostContactResource() {
     }
 
     public String getContactId() {
@@ -63,10 +36,6 @@ public class Contact {
         return message;
     }
 
-    public Date getCreateDt() {
-        return createDt;
-    }
-
     public void setContactId(String contactId) {
         this.contactId = contactId;
     }
@@ -87,19 +56,14 @@ public class Contact {
         this.message = message;
     }
 
-    public void setCreateDt(Date createDt) {
-        this.createDt = createDt;
-    }
-
     @Override
     public String toString() {
-        return "Contact{" +
+        return "PostContactResource{" +
                 "contactId='" + contactId + '\'' +
                 ", contactName='" + contactName + '\'' +
                 ", contactEmail='" + contactEmail + '\'' +
                 ", subject='" + subject + '\'' +
                 ", message='" + message + '\'' +
-                ", createDt=" + createDt +
                 '}';
     }
 }

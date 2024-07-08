@@ -2,18 +2,24 @@ package com.example.springsecuritybasic.llayer;
 
 import com.example.springsecuritybasic.db.model.*;
 import com.example.springsecuritybasic.db.repository.*;
+import com.example.springsecuritybasic.resource.springSecurityAPIResource.input.PostContactResource;
 import com.example.springsecuritybasic.resource.springSecurityAPIResource.input.PostUserResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class SpringSecurityOperations {
@@ -35,6 +41,9 @@ public class SpringSecurityOperations {
 
     @Autowired
     private NoticeRepository noticeRepository;
+
+    @Autowired
+    private ContactRepository contactRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -91,10 +100,25 @@ public class SpringSecurityOperations {
         }
     }
 
-    public List<Loans> getAccountLoans(int id) {
-        List<Loans> loansList = loanRepository.findByCustomerIdOrderByStartDtDesc(id);
-        if(loansList != null) {
-            return loansList;
+    public List<Loan> getAccountLoans(int id) {
+        // Retrieve the authentication object
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            // Extract and log user roles
+            String roles = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.joining(", "));
+            logger.info("Current user roles: {}", roles);
+        } else {
+            logger.info("No authenticated user found or user is not authenticated.");
+        }
+
+        logger.info("DBService.getAccountLoans");
+        List<Loan> loanList = loanRepository.findByCustomerIdOrderByStartDtDesc(id);
+        logger.info("loanRepository.findByCustomerIdOrderByStartDtDesc");
+        if(loanList != null) {
+            return loanList;
         } else {
             return null;
         }
@@ -109,9 +133,13 @@ public class SpringSecurityOperations {
         }
     }
 
-    public void postContact(Contact contact) {
+    public List<Contact> postContact(PostContactResource postContactResource) {
+        Contact contact = new Contact(postContactResource);
         contact.setContactId(getServiceReqNumber());
-        contact.setCreateDt(new Date(System.currentTimeMillis()));
+        contactRepository.save(contact);
+        List<Contact> contactList = new ArrayList<>();
+        contactList.add(contact);
+        return contactList;
     }
 
     private String getServiceReqNumber() {

@@ -3,11 +3,14 @@ package com.example.springsecuritybasic.controller.restController;
 import com.example.springsecuritybasic.db.model.*;
 import com.example.springsecuritybasic.db.repository.CustomerRepository;
 import com.example.springsecuritybasic.llayer.SpringSecurityOperations;
+import com.example.springsecuritybasic.resource.springSecurityAPIResource.input.PostContactResource;
 import com.example.springsecuritybasic.resource.springSecurityAPIResource.input.PostUserResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,12 +83,12 @@ public class SpringSecurityAPIController {
     }
 
     @GetMapping("/account/loan/{id}")
-    public ResponseEntity<List<Loans>> getAccountLoanData(Principal principal, @PathVariable int id){
+    public ResponseEntity<List<Loan>> getAccountLoanData(Principal principal, @PathVariable int id){
         logger.info("{} - /account/loan/{} - principalName:{}", RequestMethod.GET, id, principal.getName());
 
-        List<Loans> loansList = springSecurityOperations.getAccountLoans(id);
+        List<Loan> loanList = springSecurityOperations.getAccountLoans(id);
 
-        ResponseEntity<List<Loans>> responseEntity = ResponseEntity.ok().body(loansList);
+        ResponseEntity<List<Loan>> responseEntity = ResponseEntity.ok().body(loanList);
 
         logger.info("{}", responseEntity);
 
@@ -106,13 +109,14 @@ public class SpringSecurityAPIController {
     }
 
     @PostMapping("/information/contact")
-    public ResponseEntity<Contact> getAccountContactsDetails(Principal principal, @RequestParam Contact contact){
-        logger.info("{} - /information/contacts - principalName:{}", RequestMethod.POST, principal.getName());
-        logger.info("{}", contact);
+    @PreAuthorize("#postContactResource.contactName != 'TEST'")
+    public ResponseEntity<List<Contact>> getAccountContactsDetails(@RequestBody PostContactResource postContactResource){
+        logger.info("{} - /information/contacts", RequestMethod.POST);
+        logger.info("{}", postContactResource);
 
-        springSecurityOperations.postContact(contact);
+        List<Contact> contactList = springSecurityOperations.postContact(postContactResource);
 
-        ResponseEntity<Contact> responseEntity = ResponseEntity.created(URI.create("")).build();
+        ResponseEntity<List<Contact>> responseEntity = ResponseEntity.created(URI.create("")).body(contactList);
 
         logger.info("{}", responseEntity);
 
