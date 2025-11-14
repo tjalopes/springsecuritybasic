@@ -1,6 +1,5 @@
 package com.example.springsecuritybasic.filter;
 
-import com.example.springsecuritybasic.controller.restController.SpringSecurityAPIController;
 import jakarta.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
